@@ -2,6 +2,7 @@
 pragma solidity ^0.8.18;
 
 import {PriceConverter} from "./PriceConverter.sol";
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract FundMe {
     error FundMe__NotOwner();
@@ -13,7 +14,7 @@ contract FundMe {
 
     address public immutable i_owner;
     uint256 public constant MINIMUM_USD = 5 * 10 ** 18; // 5 USD
-    
+
     constructor() {
         i_owner = msg.sender;
     }
@@ -23,20 +24,25 @@ contract FundMe {
         addressToAmountFunded[msg.sender] += msg.value;
         funders.push(msg.sender);
     }
-        
-    modifier onlyOwner {
+
+    modifier onlyOwner() {
         if (msg.sender != i_owner) revert FundMe__NotOwner();
         _;
     }
-    
+
+    function getVersion() public view returns (uint256) {
+        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        return priceFeed.version();
+    }
+
     function withdraw() public onlyOwner {
-        for (uint256 funderIndex=0; funderIndex < funders.length; funderIndex++){
+        for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
             address funder = funders[funderIndex];
             addressToAmountFunded[funder] = 0;
         }
         funders = new address[](0); // Resetting the Array by assigning empty array
 
-        (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
+        (bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Transfer Failed");
     }
 
@@ -47,7 +53,4 @@ contract FundMe {
     receive() external payable {
         fund();
     }
-
 }
-
-
