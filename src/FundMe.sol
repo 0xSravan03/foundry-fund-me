@@ -4,7 +4,7 @@ pragma solidity ^0.8.18;
 import {PriceConverter} from "./PriceConverter.sol";
 
 contract FundMe {
-    error NotOwner();
+    error FundMe__NotOwner();
 
     using PriceConverter for uint256;
 
@@ -25,7 +25,7 @@ contract FundMe {
     }
         
     modifier onlyOwner {
-        if (msg.sender != i_owner) revert NotOwner();
+        if (msg.sender != i_owner) revert FundMe__NotOwner();
         _;
     }
     
