@@ -11,6 +11,12 @@ forge test
 ```
 The test file is using ```FundMe.s.sol``` script file for deployment.
 
+To run the test file in sepolia network, create a `.env` file and add the `SEPOLIA_RPC_URL=<Rpc-url -from-any-node-provider>`then run
+```bash
+forge test --fork-url $SEPOLIA_RPC_URL
+```
+
+
 
 
 
