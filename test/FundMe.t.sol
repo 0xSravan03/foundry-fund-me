@@ -27,4 +27,16 @@ contract TestFundMe is Test {
     function testPriceConverterVersionIsFour() external {
         assertEq(fundMe.getVersion(), 4);
     }
+
+    function testFundFailIfNotEnoughEthSent() external {
+        vm.expectRevert(bytes("You need to spend more ETH!"));
+        // Here 0.001 ether is less than MINIMUM_USD ($50) so this will fail as per contract code
+        fundMe.fund{value: 0.001 ether}(); 
+    }
+
+    function testShouldUpdateFundersAndAmountDetailsWithEnoughETH() external {
+        fundMe.fund{value: 1e18}();
+        assertEq(fundMe.getAddressToAmountFunded(address(this)), 1 ether);
+        assertEq(fundMe.funders(0), address(this));
+    }
 }

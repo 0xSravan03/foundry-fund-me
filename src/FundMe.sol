@@ -48,6 +48,10 @@ contract FundMe {
         require(callSuccess, "Transfer Failed");
     }
 
+    function getAddressToAmountFunded(address _address) external view returns (uint256) {
+        return addressToAmountFunded[_address];
+    }
+
     fallback() external payable {
         fund();
     }
