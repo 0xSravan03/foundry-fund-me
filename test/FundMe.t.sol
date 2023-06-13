@@ -21,7 +21,6 @@ contract TestFundMe is Test {
     }
 
     function testOwnerShouldBeTestFundMeContract() external {
-        // Because FundMe contract is deployed by TestFundMe contract, so owner will be TestFundMe.
         assertEq(fundMe.i_owner(), msg.sender);
     }
 
