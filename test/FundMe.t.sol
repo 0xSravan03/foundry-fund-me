@@ -9,11 +9,15 @@ contract TestFundMe is Test {
     FundMe fundMe;
     DeployFundMe deployFundMe;
 
+    address USER = makeAddr("user");
+
     function setUp() external {
         // Here first we deploy DeployFundMe contract and then call run() function
         // This allow TestFundMe to use script for deployment.
         deployFundMe = new DeployFundMe();
         fundMe = deployFundMe.run();
+
+        vm.deal(USER, 100e18); // Funding USER with 100 ETH
     }
 
     function testMinimumUSDShouldSetToFive() external {
@@ -31,12 +35,39 @@ contract TestFundMe is Test {
     function testFundFailIfNotEnoughEthSent() external {
         vm.expectRevert(bytes("You need to spend more ETH!"));
         // Here 0.001 ether is less than MINIMUM_USD ($50) so this will fail as per contract code
-        fundMe.fund{value: 0.001 ether}(); 
+        fundMe.fund{value: 0.001 ether}();
+    }
+
+    modifier funded() {
+        vm.prank(USER);
+        fundMe.fund{value: 1 ether}();
+        _;
     }
 
     function testShouldUpdateFundersAndAmountDetailsWithEnoughETH() external {
-        fundMe.fund{value: 1e18}();
-        assertEq(fundMe.getAddressToAmountFunded(address(this)), 1 ether);
-        assertEq(fundMe.funders(0), address(this));
+        vm.prank(USER); // Means the next tx is sent by the USER
+        fundMe.fund{value: 1 ether}();
+        assertEq(fundMe.getAddressToAmountFunded(USER), 1 ether);
+        assertEq(fundMe.getFunders(0), USER);
+    }
+
+    function testOnlyOwnerCanWithdraw() external funded {
+        vm.expectRevert(FundMe.FundMe__NotOwner.selector);
+        vm.prank(USER);
+        fundMe.withdraw();
+    }
+
+    function testWithdrawWithASingleFunder() external funded {
+        uint256 startingOwnerBalance = fundMe.i_owner().balance;
+        uint256 startingFundMeBalance = address(fundMe).balance;
+
+        vm.prank(fundMe.i_owner());
+        fundMe.withdraw();
+
+        uint256 endingOwnerBalance = fundMe.i_owner().balance;
+        uint256 endingFundMeBalance = address(fundMe).balance;
+
+        assertEq(endingFundMeBalance, 0);
+        assertEq(endingOwnerBalance, startingOwnerBalance + startingFundMeBalance);
     }
 }

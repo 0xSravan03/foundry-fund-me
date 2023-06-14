@@ -9,8 +9,8 @@ contract FundMe {
 
     using PriceConverter for uint256;
 
-    mapping(address => uint256) public addressToAmountFunded;
-    address[] public funders;
+    mapping(address => uint256) private addressToAmountFunded;
+    address[] private funders;
 
     address public immutable i_owner;
     address public immutable i_priceFeedAddress;
@@ -48,8 +48,13 @@ contract FundMe {
         require(callSuccess, "Transfer Failed");
     }
 
+    // Getter functions
     function getAddressToAmountFunded(address _address) external view returns (uint256) {
         return addressToAmountFunded[_address];
+    }
+
+    function getFunders(uint256 _index) external view returns (address) {
+        return funders[_index];
     }
 
     fallback() external payable {

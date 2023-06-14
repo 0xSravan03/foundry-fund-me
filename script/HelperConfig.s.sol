@@ -27,7 +27,8 @@ contract HelperConfig is Script {
     }
 
     function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
-        NetworkConfig memory sepoliaNetworkConfig = NetworkConfig({ priceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306 });
+        NetworkConfig memory sepoliaNetworkConfig =
+            NetworkConfig({priceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306});
         return sepoliaNetworkConfig;
     }
 
@@ -44,7 +45,7 @@ contract HelperConfig is Script {
         MockV3Aggregator aggregatorV3 = new MockV3Aggregator(DECIMALS, INITIAL_PRICE);
         vm.stopBroadcast();
 
-        NetworkConfig memory anvilNetworkConfig = NetworkConfig({ priceFeed : address(aggregatorV3)});
+        NetworkConfig memory anvilNetworkConfig = NetworkConfig({priceFeed: address(aggregatorV3)});
         return anvilNetworkConfig;
     }
 }
