@@ -70,4 +70,33 @@ contract TestFundMe is Test {
         assertEq(endingFundMeBalance, 0);
         assertEq(endingOwnerBalance, startingOwnerBalance + startingFundMeBalance);
     }
+
+    function testWithdrawFromMultipleFnders() external funded {
+        // By using hoax (forge std library) , it will create a new address with fund and use that
+        // address as msg.sender for next tx.
+        hoax(address(uint160(1)), 10e18); // do vm.prank() and vm.deal()
+        fundMe.fund{value : 1e18}();
+
+        hoax(address(uint160(2)), 10e18);
+        fundMe.fund{value : 5e18}();
+
+        // fund using contract
+        for (uint160 i = 10; i < 12; i++) {
+            hoax(address(i), 10e18);
+            fundMe.fund{value : 2e18}();
+        }
+
+        uint256 startingOwnerBalance = fundMe.i_owner().balance;
+        uint256 startingFundMeBalance = address(fundMe).balance;
+
+        vm.startPrank(fundMe.i_owner());
+        fundMe.withdraw();
+        vm.stopPrank();
+
+        uint256 endingOwnerBalance = fundMe.i_owner().balance;
+        uint256 endingFundMeBalance = address(fundMe).balance;
+
+        assertEq(endingFundMeBalance, 0);
+        assertEq(endingOwnerBalance, startingOwnerBalance + startingFundMeBalance);
+    }
 }
