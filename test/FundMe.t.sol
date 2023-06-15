@@ -24,7 +24,7 @@ contract TestFundMe is Test {
         assertEq(fundMe.MINIMUM_USD(), 5 * (10 ** 18));
     }
 
-    function testOwnerShouldBeTestFundMeContract() external {
+    function testOwnerShouldBeMsgSender() external {
         assertEq(fundMe.i_owner(), msg.sender);
     }
 
@@ -71,7 +71,7 @@ contract TestFundMe is Test {
         assertEq(endingOwnerBalance, startingOwnerBalance + startingFundMeBalance);
     }
 
-    function testWithdrawFromMultipleFnders() external funded {
+    function testWithdrawFromMultipleFunders() external funded {
         // By using hoax (forge std library) , it will create a new address with fund and use that
         // address as msg.sender for next tx.
         hoax(address(uint160(1)), 10e18); // do vm.prank() and vm.deal()
