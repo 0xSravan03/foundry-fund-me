@@ -74,7 +74,7 @@ Head over to [faucets.chain.link](https://faucets.chain.link/) and get some tesn
 3. Deploy
 
 ```
-forge script script/DeployFundMe.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY
+forge script script/FundMe.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY
 ```
 
 ## Scripts
